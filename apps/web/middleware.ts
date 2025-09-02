@@ -13,7 +13,8 @@ const isOrgFreeRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, req) => {
-  const { userId, orgId } = await auth()
+  const { userId, orgId } = await auth();
+  console.log('Auth info:', { userId, orgId, url: req.url });
   
   // Nếu không phải route công khai, bảo vệ route
   if(!isPublicRoute(req)) {
@@ -22,7 +23,7 @@ export default clerkMiddleware(async (auth, req) => {
 
   // Nếu đã đăng nhập nhưng không có tổ chức và không phải route miễn tổ chức
   if(userId && !orgId && !isOrgFreeRoute(req)) {
-    const searchParams = new URLSearchParams({redirect_url: req.url})
+    const searchParams = new URLSearchParams({redirect: req.url})
     const orgSelectionUrl = new URL(`/org-selection?${searchParams.toString()}`, req.url)
     
     return NextResponse.redirect(orgSelectionUrl)
