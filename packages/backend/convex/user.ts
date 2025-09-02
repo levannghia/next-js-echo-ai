@@ -9,6 +9,27 @@ export const getMany = query({
   }
 })
 
+export const getCurrentUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    
+    if (!identity) {
+      return null;
+    }
+    
+    // Log thông tin identity để debug
+    console.log("Convex Identity:", identity);
+    
+    return {
+      id: identity.tokenIdentifier,
+      name: identity.name,
+      email: identity.email,
+      orgId: identity.orgId
+    };
+  }
+});
+
 export const add = mutation({
   args: {},
   handler: async (ctx) => {
@@ -21,6 +42,9 @@ export const add = mutation({
     if(!orgId) {
       throw new Error("Messing organization")
     }
+
+    throw new Error("Test Bug")
+
     const userId = await ctx.db.insert('users', {
       name: 'John Doe',
     })
